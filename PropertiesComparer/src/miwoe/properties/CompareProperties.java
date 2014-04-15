@@ -14,8 +14,13 @@ public class CompareProperties {
 
 	Logger logger = Logger.getLogger(getClass());
 	public static void main(String[] args) {
+		Logger.getLogger(CompareProperties.class).debug("CompareProperties invoked with " +args.length+ " parameters.");
+		if (args.length == 1 && args[0].equals("-?")) {
+			System.out.println(ComparePropertiesHelper.getHelpContent());
+			return;
+		}
 		if (args.length != 3) {
-			throw new RuntimeException("Error: Use Arguments: source1 source2 mode");
+			throw new RuntimeException("Use Arguments: source1 source2 mode");
 			
 		}
 		
