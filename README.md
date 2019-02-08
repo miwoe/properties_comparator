@@ -1,4 +1,5 @@
 Properties file comparator and merge tool written in Java
+Feel free to use, branch, extend.
 
 Use CompareProperties class to run. 
 
