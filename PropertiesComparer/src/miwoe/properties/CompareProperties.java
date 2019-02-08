@@ -5,15 +5,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Properties;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 
 public class CompareProperties {
 
 	Logger logger = Logger.getLogger(getClass());
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		Logger.getLogger(CompareProperties.class).debug("CompareProperties invoked with " +args.length+ " parameters.");
 		if (args.length == 1 && args[0].equals("-?")) {
 			System.out.println(ComparePropertiesHelper.getHelpContent());
@@ -23,7 +22,12 @@ public class CompareProperties {
 			throw new RuntimeException("Use Arguments: source1 source2 mode");
 			
 		}
-		
+
+		start(args);
+
+	}
+
+	private static void start(String[] args) throws IOException {
 		File file1 = new File(args[0]);
 		File file2 = new File(args[1]);
 		if (!file1.exists() || !file2.exists()) {
@@ -43,15 +47,15 @@ public class CompareProperties {
 			if (mode.contains("1")) cp.compare21 = true;
 			if (mode.contains("2")) cp.compare12 = true;
 			if (mode.contains("v")) cp.compareValues = true;
+			if (mode.contains("m")) cp.createMerge = true;
 		}
-	
-		
+
+
 		HashMap<String, CompareResult> result = cp.compare();
-		
+
 		cp.printOutResult(result);
-		
 	}
-	
+
 	PropertiesFile propertiesFile1; PropertiesFile pf1;
 	PropertiesFile propertiesFile2; PropertiesFile pf2;
 	
@@ -60,7 +64,9 @@ public class CompareProperties {
 	boolean compare21;
 	boolean countOnly;
 	boolean compareValues;
-	
+	boolean createMerge;
+
+	Properties mergeProperties = new Properties();
 	
 	public CompareProperties(File source1, File source2) throws IOException {
 		logger.debug("File1: "+ source1.getAbsolutePath());
@@ -80,28 +86,35 @@ public class CompareProperties {
 		
 	}
 	
-	public HashMap<String, CompareResult> compare() {
+	public HashMap<String, CompareResult> compare() throws IOException {
 		HashMap<String, CompareResult> result = new HashMap<String, CompareResult>();
 		result.put("count", count());
 		if (!countOnly) {
-			if (compare12) {
-				result.putAll(compare(pf1, pf2));
-			}
 			if (compare21) {
 				result.putAll(compare(pf2, pf1));
 			}
-			
-			
+			if (compare12) {
+				result.putAll(compare(pf1, pf2));
+			}
+
+			PropertiesFile propertiesFile = new PropertiesFile(new File("merged.properties"), mergeProperties);
+
+			propertiesFile.writeFile();
 		}
 		
 		return result;
 	}
 	
 	public HashMap<String, CompareResult> compare(PropertiesFile propSource, PropertiesFile propTarget) {
+
 		HashMap<String, CompareResult> result = new HashMap<String, CompareResult>();
-		for (Object obj : propSource.properties.keySet()) {
+		final Set<Object> objects = propSource.properties.keySet();
+		TreeSet<String> keySet = new TreeSet<>();
+		objects.forEach(o -> keySet.add((String) o));
+		for (Object obj : keySet) {
 			String key = (String) obj;
 			String value = (String) propSource.properties.get(key);
+			mergeProperties.put(key, value);
 			logger.debug(key + " = " + value);
 			if (!propTarget.properties.containsKey(key)) {
 				CompareResult cr = new CompareResult();
@@ -120,8 +133,11 @@ public class CompareProperties {
 					cr.key = value;
 					result.put(key, cr);
 				}
+				mergeProperties.put(key, val1);
 			}
 		}
+
+
 		return result;
 	}
 	
