@@ -47,7 +47,11 @@ public class CompareProperties {
 			if (mode.contains("1")) cp.compare21 = true;
 			if (mode.contains("2")) cp.compare12 = true;
 			if (mode.contains("v")) cp.compareValues = true;
-			if (mode.contains("m")) cp.createMerge = true;
+			if (mode.contains("m")) {
+				cp.compare12 = true;
+				cp.compare21 = true;
+				cp.createMerge = true;
+			}
 		}
 
 
@@ -97,9 +101,11 @@ public class CompareProperties {
 				result.putAll(compare(pf1, pf2));
 			}
 
-			PropertiesFile propertiesFile = new PropertiesFile(new File("merged.properties"), mergeProperties);
+			if (createMerge) {
+				PropertiesFile propertiesFile = new PropertiesFile(new File("merged.properties"), mergeProperties);
+				propertiesFile.writeFile();
+			}
 
-			propertiesFile.writeFile();
 		}
 		
 		return result;
