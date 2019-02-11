@@ -51,13 +51,13 @@ _Use case: One wants to know which properties are missing or are different.
 
 ##### 1.properties:
 
-`a=1
-b=2`
+    a=1
+    b=2
 
 ##### 2.properties:
 
-`b=3
-c=42`
+    b=3
+    c=42
 
 
 ##### Log-Output:
