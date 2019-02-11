@@ -12,12 +12,12 @@ Use CompareProperties class to run.
 * Arg2: Path to file two
 * Arg3: Mode
 
-Mode:
-count : compares only the number of keys in the files   
-1: checks for missing keys in file one in relation to file two.   
-2: checks for missing keys in file two in relation to file one.   
-v: compares also differences in trimmed values. Case sensitive. 
-m: Merges the two files (values in file 2 have higher prio, means 2 is merged in 1)  
+##### Available modes
+_count_ : compares only the number of keys in the files   
+_1_: checks for missing keys in file one in relation to file two.   
+_2_: checks for missing keys in file two in relation to file one.   
+_v_: compares also differences in trimmed values. Case sensitive. 
+_m_: Merges the two files (values in file 2 have higher prio, means 2 is merged in 1)  
 
 #### Usage 
 
